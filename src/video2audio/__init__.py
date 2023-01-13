@@ -65,7 +65,14 @@ class AVFile:
         if chapter is None:
             time_flags = ''
         else:
-            time_flags = '-ss %s -to %s' % (chapter['start_time'], chapter['end_time'])
+            time_flags = '-ss %s ' % (
+                chapter['start_time']
+                if chapter['start_time'] is not None
+                else '00:00:00.000'
+            )
+            # TODO: could time_flags just be '' if chapter['start_time'] is None?  or would that mess up the -to flag?
+            if chapter['end_time'] is not None:
+                time_flags += '-to %s' % (chapter['end_time'])
         command = "ffmpeg -i %s %s -q:a 0 -map 0:a:%d %s %s" % (
             shlex.quote(self.filename),
             time_flags,
@@ -89,38 +96,38 @@ class AVFile:
         parameters are the same as in extract_audio().
         """
         chapters = self.get_chapters(force_generated_titles=True)
-        if len(chapters) <= 0:
+        expected_num_filenames = 1 if len(chapters) < 1 else len(chapters)
+        if (
+            output_filenames is not None
+            and len(output_filenames) != expected_num_filenames
+        ):
+            raise RuntimeError(
+                "%d output filenames were specified, but input file seems have %d chapters."
+                % (len(output_filenames), expected_num_filenames)
+            )
+        if len(chapters) < 1:
             warn(
                 "%s doesn't appear to have chapters.  Will output a single file."
                 % self.filename
             )
+            chapters = [
+                {
+                    'title': 'Chapter 1',
+                    'start_time': None,
+                    'end_time': None,
+                }
+            ]
+        for chapnum, chapter in enumerate(chapters):
             if output_filenames is not None:
-                if len(output_filenames) != 1:
-                    raise RuntimeError(
-                        "%d output filenames were specified, but input file seems to only have 1 chapter."
-                        % len(output_filenames)
-                    )
-                output_filename = output_filenames[0]
+                output_filename = output_filenames[chapnum]
             else:
-                output_filename = 'Chapter 1.mp3'
+                output_filename = chapter['title'] + '.mp3'
             self.extract_audio(
                 os.path.join(output_dir, output_filename),
-                chapter=None,
+                chapter=chapter,
                 stream=stream,
                 overwrite=overwrite,
             )
-        else:
-            for chapnum, chapter in enumerate(chapters):
-                if output_filenames is not None:
-                    output_filename = output_filenames[chapnum]
-                else:
-                    output_filename = chapter['title'] + '.mp3'
-                self.extract_audio(
-                    os.path.join(output_dir, output_filename),
-                    chapter=chapter,
-                    stream=stream,
-                    overwrite=overwrite,
-                )
 
 
 def check_file(filename):
