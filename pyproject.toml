@@ -26,5 +26,5 @@ classifiers = [
 "Homepage" = "https://github.com/atpage/video2audio"
 "Bug Tracker" = "https://github.com/atpage/video2audio/issues"
 
-# [project.scripts]
-# check_media = "video2audio.cli:main"
+[project.scripts]
+video2audio = "video2audio.cli:main"

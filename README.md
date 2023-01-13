@@ -5,7 +5,9 @@ This library uses `ffmpeg` to extract an audio track from a video file.  The aud
 
 # Installation
 
-    $ pip3 install video2audio
+```sh
+$ pip3 install video2audio
+```
 
 The `ffmpeg` and `ffprobe` commands must be available on your system (and `PATH`).
 
@@ -38,9 +40,13 @@ f.extract_audio('single_chapter.mp3', chapter=chapter_list[12])
 
 ## CLI
 
-TODO: document it, if we add a CLI command.
+Extracting the second audio track using the command line tool:
+
+```sh
+$ video2audio -t 1 /path/to/some/movie.mkv /path/to/chapter/outputs/
+```
 
 # TODO
 
 * Add tests
-* Check for injection / missing escapes
+* Check for injection / missing escapes in subprocess

@@ -80,11 +80,13 @@ class AVFile:
             overwrite_flag,
             shlex.quote(output_filename),
         )
+        # TODO: allow other quality options, e.g. copying original without re-encoding
         output = subprocess.check_output(
             command,
             shell=True,
             # stderr=subprocess.STDOUT,
         )
+        # TODO: (option to) squelch output?
 
     def extract_all_chapters_audio(
         self, output_dir, output_filenames=None, stream=0, overwrite=False
