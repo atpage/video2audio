@@ -40,7 +40,7 @@ f.extract_audio('single_chapter.mp3', chapter=chapter_list[12])
 
 ## CLI
 
-Extracting the second audio track using the command line tool:
+Extract the second audio track using the command line tool:
 
 ```sh
 $ video2audio -t 1 /path/to/some/movie.mkv /path/to/chapter/outputs/
