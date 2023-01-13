@@ -48,5 +48,6 @@ $ video2audio -t 1 /path/to/some/movie.mkv /path/to/chapter/outputs/
 
 # TODO
 
+* Include metadata in output, e.g. band and album name?
 * Add tests
 * Check for injection / missing escapes in subprocess
