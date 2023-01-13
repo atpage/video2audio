@@ -36,8 +36,9 @@ The `ffmpeg` and `ffprobe` commands must be available on your system (and `PATH`
 
 ## CLI
 
-TODO, if there is a CLI command.
+TODO: document it, if there is a CLI command.
 
 # TODO
 
 * Add tests
+* Check for injection / missing escapes
