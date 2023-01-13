@@ -5,7 +5,7 @@ This library uses `ffmpeg` to extract an audio track from a video file.  The aud
 
 # Installation
 
-TODO
+    $ pip3 install video2audio
 
 The `ffmpeg` and `ffprobe` commands must be available on your system (and `PATH`).
 
