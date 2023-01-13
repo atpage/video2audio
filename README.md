@@ -1,7 +1,7 @@
 
 # Description
 
-This library uses `ffmpeg` to extract a/the audio track from a video file.  The audio can also be separated by chapter, if the chapters are annotated in the video.
+This library uses `ffmpeg` to extract an audio track from a video file.  The audio can also be separated by chapter, if the chapters are annotated in the video.
 
 # Installation
 

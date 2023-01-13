@@ -8,7 +8,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "video2audio"
-version = "2023.1.12"
+version = "2023.1.13"
 authors = [
   { name="Alex Page", email="a.t.page@gmail.com" },
 ]
