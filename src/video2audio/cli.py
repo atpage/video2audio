@@ -8,14 +8,14 @@ from video2audio import AVFile
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Extract audio from a video file.',
+        description='Extract audio from a video file.  The output is one mp3 file for each chapter in the video.',
     )
     parser.add_argument(
         '-t',
         '--track-number',
         type=int,
         default=0,
-        help='which audio track to extract (0-indexed) (default: 0)',
+        help='which audio track (i.e. stream) to extract (0-indexed) (default: 0)',
     )
     parser.add_argument(
         '-o',
