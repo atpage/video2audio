@@ -46,6 +46,8 @@ Extract the second audio track using the command line tool:
 $ video2audio -t 1 /path/to/some/movie.mkv /path/to/chapter/outputs/
 ```
 
+`video2audio -h` will explain the other options.
+
 # TODO
 
 * Add tests
