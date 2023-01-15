@@ -49,7 +49,9 @@ class AVFile:
             )
         return results
 
-    def extract_audio(self, output_filename, chapter=None, stream=0, overwrite=False):
+    def extract_audio(
+        self, output_filename, chapter=None, stream=0, metadata_dict={}, overwrite=False
+    ):
         """Extracts audio from a single chapter of the input file.  The output
         is encoded using '-q:a 0', which should give high quality.
 
@@ -58,6 +60,7 @@ class AVFile:
         chapter -- either None to grab the entire file, or a single chapter dict from the get_chapters() list (default None)
         stream -- which audio stream to use (0-indexed) (default 0)
         overwrite -- overwrite output_filename if it already exists (default False)
+        metadata_dict -- dict of metadata to be included in output; see make_metadata_flags()
         """
         check_file(self.filename)
         ffmpeg_path = get_bin_path('ffmpeg')
@@ -73,8 +76,10 @@ class AVFile:
             # TODO: could time_flags just be '' if chapter['start_time'] is None?  or would that mess up the -to flag?
             if chapter['end_time'] is not None:
                 time_flags += '-to %s' % (chapter['end_time'])
-        command = "ffmpeg -i %s %s -q:a 0 -map 0:a:%d %s %s" % (
+        metadata_flags = make_metadata_flags(metadata_dict)
+        command = "ffmpeg -i %s %s %s -q:a 0 -map 0:a:%d %s %s" % (
             shlex.quote(self.filename),
+            metadata_flags,
             time_flags,
             stream,
             overwrite_flag,
@@ -89,13 +94,20 @@ class AVFile:
         # TODO: (option to) squelch output?
 
     def extract_all_chapters_audio(
-        self, output_dir, output_filenames=None, stream=0, overwrite=False
+        self,
+        output_dir,
+        output_filenames=None,
+        stream=0,
+        metadata_dict={},
+        overwrite=False,
     ):
         """Extract audio from each chapter into separate mp3 files, which will
         be saved in output_dir.  Filenames will be 'Chapter 1.mp3',
         'Chapter 2.mp3', etc., unless a list of output_filenames is
         given (including extensions).  The `stream` and `overwrite`
         parameters are the same as in extract_audio().
+        `metadata_dict` should contain static information that will be
+        applied to every chapter.
         """
         chapters = self.get_chapters(force_generated_titles=True)
         expected_num_filenames = 1 if len(chapters) < 1 else len(chapters)
@@ -120,6 +132,7 @@ class AVFile:
                 }
             ]
         for chapnum, chapter in enumerate(chapters):
+            metadata_dict['track'] = "%d/%d" % (chapnum + 1, len(chapters))
             if output_filenames is not None:
                 output_filename = output_filenames[chapnum]
             else:
@@ -129,7 +142,22 @@ class AVFile:
                 chapter=chapter,
                 stream=stream,
                 overwrite=overwrite,
+                metadata_dict=metadata_dict,
             )
+
+
+def make_metadata_flags(metadata_dict):
+    """Given a dict like:
+         {
+           'album': 'Album Name',
+           'artist': 'Band Name',
+         }
+    Return a list of ffmpeg args like:
+      '-metadata album="Album Name" -metadata artist="Band Name"'
+    """
+    return ' '.join(
+        ['-metadata %s=%s' % (k, shlex.quote(v)) for k, v in metadata_dict.items()]
+    )
 
 
 def check_file(filename):

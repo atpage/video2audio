@@ -24,6 +24,16 @@ def main():
         default=False,
         help='overwrite existing files in output dir (default: False)',
     )
+    parser.add_argument(
+        '--artist',
+        type=str,
+        help='artist name, to add to output metadata',
+    )
+    parser.add_argument(
+        '--album',
+        type=str,
+        help='album name, to add to output metadata',
+    )
     parser.add_argument('input-file', type=str, help='video filename')
     parser.add_argument(
         'output-path', type=str, help='directory where output mp3(s) will be saved'
@@ -34,8 +44,17 @@ def main():
     output_dir = getattr(args, 'output-path')
     os.makedirs(output_dir, exist_ok=True)
     f = AVFile(filename)
+    metadata_dict = {}
+    if args.artist is not None:
+        metadata_dict['artist'] = args.artist
+        # TODO: should we use 'composer' or 'album_artist' instead of 'artist'?
+    if args.album is not None:
+        metadata_dict['album'] = args.album
     f.extract_all_chapters_audio(
-        output_dir, stream=args.track_number, overwrite=args.overwrite
+        output_dir,
+        stream=args.track_number,
+        overwrite=args.overwrite,
+        metadata_dict=metadata_dict,
     )
     # TODO: print result(s) / return exit code
 
