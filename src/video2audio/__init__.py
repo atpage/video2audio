@@ -62,6 +62,8 @@ class AVFile:
         overwrite -- overwrite output_filename if it already exists (default False)
         metadata_dict -- dict of metadata to be included in output; see make_metadata_flags()
         """
+        # TODO: should (some) plex_naming stuff take place in here,
+        # instead of in extract_all_chapters_audio()?
         check_file(self.filename)
         ffmpeg_path = get_bin_path('ffmpeg')
         os.makedirs(os.path.dirname(output_filename), exist_ok=True)
