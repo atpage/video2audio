@@ -64,6 +64,7 @@ class AVFile:
         """
         check_file(self.filename)
         ffmpeg_path = get_bin_path('ffmpeg')
+        os.makedirs(os.path.dirname(output_filename), exist_ok=True)
         overwrite_flag = '-y' if overwrite else ''
         if chapter is None:
             time_flags = ''
@@ -100,6 +101,7 @@ class AVFile:
         stream=0,
         metadata_dict={},
         overwrite=False,
+        plex_naming=False,
     ):
         """Extract audio from each chapter into separate mp3 files, which will
         be saved in output_dir.  Filenames will be 'Chapter 1.mp3',
@@ -108,6 +110,11 @@ class AVFile:
         parameters are the same as in extract_audio().
         `metadata_dict` should contain static information that will be
         applied to every chapter.
+
+        `plex_naming` means that the output should be organized like
+        output_dir/Artist/Album/TrackNumber - TrackName.mp3.  If
+        enabled, 'artist' and 'album' must be in metadata_dict.  Note
+        that if output_filenames is set, it will override plex_naming.
         """
         chapters = self.get_chapters(force_generated_titles=True)
         expected_num_filenames = 1 if len(chapters) < 1 else len(chapters)
@@ -136,9 +143,21 @@ class AVFile:
             if output_filenames is not None:
                 output_filename = output_filenames[chapnum]
             else:
-                output_filename = chapter['title'] + '.mp3'
+                if not plex_naming:
+                    output_filename = chapter['title'] + '.mp3'
+                else:
+                    output_filename = '%d - %s.mp3' % (chapnum + 1, chapter['title'])
+            if not plex_naming:
+                output_filename = os.path.join(output_dir, output_filename)
+            else:
+                output_filename = os.path.join(
+                    output_dir,
+                    metadata_dict['artist'],
+                    metadata_dict['album'],
+                    output_filename,
+                )
             self.extract_audio(
-                os.path.join(output_dir, output_filename),
+                output_filename,
                 chapter=chapter,
                 stream=stream,
                 overwrite=overwrite,

@@ -25,6 +25,13 @@ def main():
         help='overwrite existing files in output dir (default: False)',
     )
     parser.add_argument(
+        '-p',
+        '--plex-naming',
+        action='store_true',
+        default=True,
+        help='if artist+album are given, organize output like Artist/Album/TrackNumber - TrackName.mp3 (default: True)',
+    )
+    parser.add_argument(
         '--artist',
         type=str,
         help='artist name, to add to output metadata',
@@ -47,7 +54,12 @@ def main():
     metadata_dict = {}
     if args.artist is not None:
         metadata_dict['artist'] = args.artist
-        # TODO: should we use 'composer' or 'album_artist' instead of 'artist'?
+        # TODO: should we use 'composer' or 'album_artist' instead of
+        # (or in addition to) 'artist'?  Plex says we should include
+        # "Artist (and potentially Album Artist) for each track".  It
+        # seems that 'artist' should be the track-specific actual
+        # artist, whereas 'album artist' can be something like
+        # "Various Artists" or the overall maker of an album.
     if args.album is not None:
         metadata_dict['album'] = args.album
     f.extract_all_chapters_audio(
@@ -55,6 +67,7 @@ def main():
         stream=args.track_number,
         overwrite=args.overwrite,
         metadata_dict=metadata_dict,
+        plex_naming=args.plex_naming,
     )
     # TODO: print result(s) / return exit code
 
